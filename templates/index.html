@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}SURVION - Suspicious Activity Detection System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="neon-text glitch-text" data-text="SURVION">
+            <span class="text-primary">SUR</span><span class="accent-highlight">VION</span>
+        </h1>
+        <p class="typing-effect">Suspicious Activity Detection System</p>
+        <p>Advanced AI-powered detection with futuristic security monitoring</p>
+        <div class="hero-cta">
+            <a href="{{ url_for('register') }}" class="btn btn-primary"><i class="fas fa-rocket"></i> Get Started</a>
+            <a href="#features" class="btn accent-bg"><i class="fas fa-info-circle"></i> Learn More</a>
+        </div>
+    </div>
+    <div class="hero-particles"></div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features">
+    <div class="container">
+        <div class="section-title">
+            <h2>Core <span class="accent-highlight">Capabilities</span></h2>
+            <p>Our cutting-edge system delivers next-generation security monitoring with blue-tech innovation</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card neon-element animate-on-scroll">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Quantum AI Analysis</h3>
+                <p>Our advanced neural networks analyze content in real-time to detect suspicious activities with unprecedented accuracy.</p>
+            </div>
+            
+            <div class="feature-card neon-element animate-on-scroll">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Zero-Latency Processing</h3>
+                <p>Analyze footage with near-instantaneous response times, enabling immediate action against security threats.</p>
+            </div>
+            
+            <div class="feature-card neon-element animate-on-scroll">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Neural Safeguard</h3>
+                <p>Strengthen your security infrastructure with multi-layered threat detection and proactive countermeasures.</p>
+            </div>
+            
+            <div class="feature-card neon-element animate-on-scroll">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Holographic Analytics</h3>
+                <p>Gain comprehensive insights with immersive 3D visualization and predictive behavioral analysis.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Product Showcase -->
+<section class="product-showcase">
+    <div class="container">
+        <div class="section-title">
+            <h2><span style="color: #5f3aff;">BLUE</span>CORE TECHNOLOGY</h2>
+            <p>Explore our advanced detection solutions powered by BlueCore</p>
+        </div>
+        
+        <div class="product-carousel">
+            <div class="product-slide">
+                <div class="product-image" style="background-color: var(--primary-color);">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="product-info">
+                    <h3>BlueCore Detection</h3>
+                    <p>Our flagship detection system with quantum neural processing</p>
+                </div>
+            </div>
+            
+            <div class="product-slide">
+                <div class="product-image" style="background-color: #5f3aff;">
+                    <i class="fas fa-video"></i>
+                </div>
+                <div class="product-info">
+                    <h3>HyperVision™ Monitoring</h3>
+                    <p>Ultra-high definition surveillance with predictive alerts</p>
+                </div>
+            </div>
+            
+            <div class="product-slide">
+                <div class="product-image" style="background-color: var(--primary-color);">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="product-info">
+                    <h3>NexusConnect</h3>
+                    <p>Seamless mobile integration with biometric authentication</p>
+                </div>
+            </div>
+            
+            <div class="product-slide">
+                <div class="product-image" style="background-color: #5f3aff;">
+                    <i class="fas fa-cloud"></i>
+                </div>
+                <div class="product-info">
+                    <h3>SkyVault Storage</h3>
+                    <p>Quantum-encrypted cloud storage for your security footage</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works">
+    <div class="container">
+        <div class="section-title">
+            <h2>Operational Framework</h2>
+            <p>Our advanced four-stage process for uncompromising security</p>
+        </div>
+        
+        <div class="steps">
+            <div class="step animate-on-scroll">
+                <div class="step-number">1</div>
+                <h3>Data Acquisition</h3>
+                <p>Ultra-high resolution capture with lossless compression</p>
+            </div>
+            
+            <div class="step animate-on-scroll">
+                <div class="step-number">2</div>
+                <h3>Neural Analysis</h3>
+                <p>Multi-layered AI processing with pattern recognition</p>
+            </div>
+            
+            <div class="step animate-on-scroll">
+                <div class="step-number">3</div>
+                <h3>Threat Assessment</h3>
+                <p>Algorithmic classification of potential security concerns</p>
+            </div>
+            
+            <div class="step animate-on-scroll">
+                <div class="step-number">4</div>
+                <h3>Adaptive Response</h3>
+                <p>Automated countermeasures with human oversight</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Technologies Section -->
+<section class="technologies">
+    <div class="container">
+        <div class="section-title">
+            <h2>BlueCore Technology <span class="accent-highlight">Stack</span></h2>
+            <p>Powered by revolutionary technologies for unmatched security</p>
+        </div>
+        
+        <div class="tech-grid">
+            <div class="tech-card animate-on-scroll">
+                <div class="tech-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <h3>Quantum Neural Networks</h3>
+                <p>Leveraging quantum computing principles for ultra-fast pattern recognition</p>
+            </div>
+            
+            <div class="tech-card animate-on-scroll">
+                <div class="tech-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <h3>OmniVision™</h3>
+                <p>Multi-spectrum computer vision with thermal and infrared capabilities</p>
+            </div>
+            
+            <div class="tech-card animate-on-scroll">
+                <div class="tech-icon">
+                    <i class="fas fa-fingerprint"></i>
+                </div>
+                <h3>Behavioral Analytics Engine</h3>
+                <p>Predictive modeling system that anticipates suspicious activities before they occur</p>
+            </div>
+            
+            <div class="tech-card animate-on-scroll">
+                <div class="tech-icon">
+                    <i class="fas fa-hand-paper"></i>
+                </div>
+                <h3>GestureSync</h3>
+                <p>Advanced motion tracking with millimeter-precise gesture recognition</p>
+            </div>
+            
+            <div class="tech-card animate-on-scroll">
+                <div class="tech-icon">
+                    <i class="fas fa-box"></i>
+                </div>
+                <h3>NexusCore Model</h3>
+                <p>Proprietary object detection framework with 99.8% accuracy rates</p>
+            </div>
+            
+            <div class="tech-card animate-on-scroll">
+                <div class="tech-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>BlueShield Security</h3>
+                <p>Military-grade encryption for all data transmission and storage</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3 data-value="99.8">99.8%</h3>
+                <p>Detection Accuracy</p>
+            </div>
+            
+            <div class="stat-item">
+                <h3 class="accent-highlight" data-value="750">750+</h3>
+                <p>Security Deployments</p>
+            </div>
+            
+            <div class="stat-item">
+                <h3 data-value="0.05">0.05s</h3>
+                <p>Average Response Time</p>
+            </div>
+            
+            <div class="stat-item">
+                <h3 class="accent-highlight" data-value="24">24/7</h3>
+                <p>Continuous Monitoring</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials">
+    <div class="container">
+        <div class="section-title">
+            <h2>Client <span class="accent-highlight">Feedback</span></h2>
+            <p>What our partners say about SURVION's revolutionary security solutions</p>
+        </div>
+        
+        <div class="testimonial-slider">
+            <div class="testimonial neon-element">
+                <div class="testimonial-content">
+                    "SURVION's BlueCore technology has transformed our security operations. The advanced AI detection capabilities have increased our threat prevention by over 200%."
+                </div>
+                <div class="testimonial-author">Dr. Sarah Chen</div>
+                <div class="testimonial-role">Chief Security Officer, QuantumTech Industries</div>
+            </div>
+            
+            <div class="testimonial neon-element">
+                <div class="testimonial-content">
+                    "The integration of NexusCore with our existing infrastructure was seamless. Detection accuracy is unparalleled, and the holographic analytics provide insights we never thought possible."
+                </div>
+                <div class="testimonial-author">James Wilson</div>
+                <div class="testimonial-role">VP of Operations, BlueShift Security</div>
+            </div>
+            
+            <div class="testimonial neon-element">
+                <div class="testimonial-content">
+                    "As a government contractor, security is our top priority. SURVION delivers military-grade protection with civilian-friendly interfaces. Simply outstanding."
+                </div>
+                <div class="testimonial-author">Admiral David Parker</div>
+                <div class="testimonial-role">Director of Cybersecurity, FedTech Solutions</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="newsletter">
+    <div class="container">
+        <h2>Stay <span class="accent-highlight">Updated</span></h2>
+        <p>Subscribe to our newsletter for the latest security innovations and BlueCore technology updates</p>
+        
+        <form class="newsletter-form">
+            <input type="email" placeholder="Enter your email address" required>
+            <button type="submit" class="btn accent-bg">Subscribe</button>
+        </form>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+    <div class="container">
+        <h2>Ready to <span class="accent-highlight glitch-text">Secure</span> Your Future?</h2>
+        <p>Experience the power of BlueCore technology and revolutionize your security infrastructure</p>
+        <a href="{{ url_for('register') }}" class="btn btn-primary accent-border"><i class="fas fa-shield-alt"></i> Get Started Now</a>
+    </div>
+</section>
+{% endblock %} 

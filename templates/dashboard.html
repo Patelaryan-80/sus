@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SURVION{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-shield-alt accent-highlight"></i>
+            <h3>SUR<span class="accent-highlight">VION</span></h3>
+        </div>
+        
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fas fa-video accent-highlight"></i> Surveillance</a></li>
+                <li><a href="#"><i class="fas fa-history"></i> Activity Log</a></li>
+                <li><a href="#"><i class="fas fa-chart-bar accent-highlight"></i> Analytics</a></li>
+                <li><a href="#"><i class="fas fa-microchip"></i> BlueCore</a></li>
+                <li><a href="#"><i class="fas fa-cog accent-highlight"></i> Settings</a></li>
+                <li><a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-header">
+            <h2>Command <span class="accent-highlight">Center</span></h2>
+            <div>
+                <span class="neon-text">Welcome, <strong class="accent-highlight">{{ session.get('user_id') }}</strong></span>
+            </div>
+        </div>
+        
+        <!-- Dashboard Cards -->
+        <div class="dashboard-cards">
+            <div class="dashboard-card neon-element">
+                <h3><i class="fas fa-satellite"></i> Active Monitors</h3>
+                <div class="value">6</div>
+                <p>All monitoring systems operational</p>
+            </div>
+            
+            <div class="dashboard-card neon-element accent-border">
+                <h3><i class="fas fa-exclamation-triangle accent-highlight"></i> Security Alerts</h3>
+                <div class="value accent-highlight">3</div>
+                <p>1 high priority, 2 standard</p>
+            </div>
+            
+            <div class="dashboard-card neon-element">
+                <h3><i class="fas fa-shield-alt"></i> BlueCore Status</h3>
+                <div class="value">Optimal</div>
+                <p>Neural networks functioning at 99.8% efficiency</p>
+            </div>
+            
+            <div class="dashboard-card neon-element accent-border">
+                <h3><i class="fas fa-chart-line accent-highlight"></i> Detection Rate</h3>
+                <div class="value accent-highlight">99.8%</div>
+                <p>+2.3% from previous calibration</p>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="dashboard-section">
+            <h3>Security <span class="accent-highlight">Incidents</span></h3>
+            <div class="activity-list">
+                <div class="activity-item neon-element">
+                    <div class="activity-icon"><i class="fas fa-exclamation-circle"></i></div>
+                    <div class="activity-details">
+                        <h4>Unauthorized Access Attempt</h4>
+                        <p>Sector B - Quantum Server Room</p>
+                        <span class="activity-time">Today, 15:42</span>
+                    </div>
+                    <div class="activity-action">
+                        <a href="#" class="btn btn-sm accent-bg">Analyze</a>
+                    </div>
+                </div>
+                
+                <div class="activity-item neon-element">
+                    <div class="activity-icon"><i class="fas fa-running accent-highlight"></i></div>
+                    <div class="activity-details">
+                        <h4>Anomalous Movement Pattern</h4>
+                        <p>Camera #4 - Research Laboratory</p>
+                        <span class="activity-time">Today, 14:23</span>
+                    </div>
+                    <div class="activity-action">
+                        <a href="#" class="btn btn-sm btn-primary">Review</a>
+                    </div>
+                </div>
+                
+                <div class="activity-item neon-element">
+                    <div class="activity-icon"><i class="fas fa-user-shield"></i></div>
+                    <div class="activity-details">
+                        <h4>Biometric Authentication Failure</h4>
+                        <p>Access point A7 - Multiple attempts</p>
+                        <span class="activity-time">Today, 12:18</span>
+                    </div>
+                    <div class="activity-action">
+                        <a href="#" class="btn btn-sm accent-bg">Investigate</a>
+                    </div>
+                </div>
+                
+                <div class="activity-item neon-element">
+                    <div class="activity-icon"><i class="fas fa-sync accent-highlight"></i></div>
+                    <div class="activity-details">
+                        <h4>BlueCore Update Completed</h4>
+                        <p>Neural network version 3.7.2 deployed</p>
+                        <span class="activity-time">Yesterday, 22:30</span>
+                    </div>
+                    <div class="activity-action">
+                        <a href="#" class="btn btn-sm btn-primary">Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Performance -->
+        <div class="dashboard-section">
+            <h3>System <span class="accent-highlight">Performance</span></h3>
+            <div class="dashboard-cards">
+                <div class="dashboard-card neon-element">
+                    <h3><i class="fas fa-microchip"></i> Quantum Processing</h3>
+                    <div class="value">87%</div>
+                    <p>Neural network capacity</p>
+                </div>
+                
+                <div class="dashboard-card neon-element accent-border">
+                    <h3><i class="fas fa-memory accent-highlight"></i> Memory Allocation</h3>
+                    <div class="value accent-highlight">42%</div>
+                    <p>6.2 TB of 15 TB utilized</p>
+                </div>
+                
+                <div class="dashboard-card neon-element">
+                    <h3><i class="fas fa-tachometer-alt"></i> Response Time</h3>
+                    <div class="value">0.05s</div>
+                    <p>Average alert generation speed</p>
+                </div>
+                
+                <div class="dashboard-card neon-element accent-border">
+                    <h3><i class="fas fa-cloud-upload-alt accent-highlight"></i> Data Sync</h3>
+                    <div class="value accent-highlight">100%</div>
+                    <p>Last sync: 2 minutes ago</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

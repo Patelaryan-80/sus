@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - SURVION{% endblock %}
+
+{% block content %}
+<div class="container profile-container">
+    <div class="profile-header neon-element">
+        <div class="profile-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="profile-info">
+            <h2 class="neon-text">{{ session.get('user_id') }}</h2>
+            <p>BlueCore Certified Security Analyst</p>
+            <p>Member since January 2025</p>
+        </div>
+    </div>
+    
+    <div class="profile-sections">
+        <div class="profile-section neon-element">
+            <h3>Security Credentials</h3>
+            <div class="profile-details">
+                <div class="profile-detail-item">
+                    <div class="detail-label">Username:</div>
+                    <div class="detail-value">{{ session.get('user_id') }}</div>
+                </div>
+                <div class="profile-detail-item">
+                    <div class="detail-label">Email:</div>
+                    <div class="detail-value">{{ session.get('user_id') }}@survion.com</div>
+                </div>
+                <div class="profile-detail-item">
+                    <div class="detail-label">Clearance:</div>
+                    <div class="detail-value">Level 4 - Alpha</div>
+                </div>
+                <div class="profile-detail-item">
+                    <div class="detail-label">Neural Access:</div>
+                    <div class="detail-value">Full System</div>
+                </div>
+                <div class="profile-detail-item">
+                    <div class="detail-label">2FA Status:</div>
+                    <div class="detail-value">Enabled (Quantum Key)</div>
+                </div>
+                <div class="profile-detail-item">
+                    <div class="detail-label">Status:</div>
+                    <div class="detail-value">Active</div>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <a href="#" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Profile</a>
+                <a href="#" class="btn btn-secondary"><i class="fas fa-key"></i> Update Security</a>
+            </div>
+        </div>
+        
+        <div class="profile-section neon-element">
+            <h3>Performance Metrics</h3>
+            <div class="profile-stats">
+                <div class="stat-box">
+                    <div class="stat-value">87</div>
+                    <div class="stat-label">Alerts Analyzed</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">42</div>
+                    <div class="stat-label">Threats Neutralized</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">99.8%</div>
+                    <div class="stat-label">Accuracy Rating</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">Active Monitors</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="profile-section neon-element">
+        <h3>Security Timeline</h3>
+        <div class="activity-timeline">
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="timeline-content">
+                    <h4>BlueCore Access Granted</h4>
+                    <p>Successfully authenticated with quantum verification</p>
+                    <span class="timeline-date">Today, 09:15 AM</span>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="timeline-content">
+                    <h4>Critical Alert Neutralized</h4>
+                    <p>Identified and contained unauthorized access attempt in Sector B</p>
+                    <span class="timeline-date">Today, 15:42 PM</span>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="timeline-content">
+                    <h4>System Configuration Updated</h4>
+                    <p>Optimized neural network parameters for improved detection</p>
+                    <span class="timeline-date">Yesterday, 14:30 PM</span>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="timeline-content">
+                    <h4>Security Analysis Completed</h4>
+                    <p>Generated comprehensive threat assessment report</p>
+                    <span class="timeline-date">Jan 15, 2025, 10:00 AM</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="profile-section neon-element">
+        <h3>System Access</h3>
+        <div class="dashboard-cards">
+            <div class="dashboard-card">
+                <h3><i class="fas fa-microchip"></i> BlueCore Access</h3>
+                <div class="value">Authorized</div>
+                <p>Full neural system privileges</p>
+            </div>
+            
+            <div class="dashboard-card">
+                <h3><i class="fas fa-database"></i> Data Storage</h3>
+                <div class="value">15 TB</div>
+                <p>Quantum-encrypted allocation</p>
+            </div>
+            
+            <div class="dashboard-card">
+                <h3><i class="fas fa-users"></i> Team Access</h3>
+                <div class="value">Alpha Team</div>
+                <p>Leading 5 security analysts</p>
+            </div>
+            
+            <div class="dashboard-card">
+                <h3><i class="fas fa-code-branch"></i> System Version</h3>
+                <div class="value">3.7.2</div>
+                <p>Latest neural network update</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
