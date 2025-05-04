@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SURVION - Advanced AI-powered suspicious activity detection system with BlueCore technology for enhanced security monitoring">
     <title>{% block title %}SURVION - Suspicious Activity Detection System{% endblock %}</title>
+    
+    <!-- Preload fonts for better performance -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
@@ -15,27 +21,28 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
     <div class="page-wrapper">
         <div class="nav-overlay"></div>
         <header>
             <div class="container">
                 <nav class="navbar">
-                    <a href="{{ url_for('index') }}" class="logo">
+                    <a href="{{ url_for('index') }}" class="logo" aria-label="Survion Home">
                         <span class="logo-text"><span class="accent-highlight">SUR</span>VION</span>
-                        <span class="logo-icon gradient-border"><i class="fas fa-shield-alt"></i></span>
+                        <span class="logo-icon gradient-border"><i class="fas fa-shield-alt" aria-hidden="true"></i></span>
                     </a>
                     <ul class="nav-links">
-                        <li><a href="{{ url_for('index') }}"><span><i class="fas fa-home"></i> Home</span></a></li>
-                        <li><a href="{{ url_for('dashboard') }}"><span><i class="fas fa-tachometer-alt accent-highlight"></i> Dashboard</span></a></li>
+                        <li><a href="{{ url_for('index') }}"><span><i class="fas fa-home" aria-hidden="true"></i> Home</span></a></li>
+                        <li><a href="{{ url_for('dashboard') }}"><span><i class="fas fa-tachometer-alt accent-highlight" aria-hidden="true"></i> Dashboard</span></a></li>
                         {% if 'user_id' in session %}
-                        <li><a href="{{ url_for('profile') }}"><span><i class="fas fa-user"></i> Profile</span></a></li>
-                        <li><a href="{{ url_for('logout') }}"><span><i class="fas fa-sign-out-alt accent-highlight"></i> Logout</span></a></li>
+                        <li><a href="{{ url_for('profile') }}"><span><i class="fas fa-user" aria-hidden="true"></i> Profile</span></a></li>
+                        <li><a href="{{ url_for('logout') }}"><span><i class="fas fa-sign-out-alt accent-highlight" aria-hidden="true"></i> Logout</span></a></li>
                         {% else %}
-                        <li><a href="{{ url_for('login') }}"><span><i class="fas fa-sign-in-alt"></i> Login</span></a></li>
-                        <li><a href="{{ url_for('register') }}"><span><i class="fas fa-user-plus accent-highlight"></i> Register</span></a></li>
+                        <li><a href="{{ url_for('login') }}"><span><i class="fas fa-sign-in-alt" aria-hidden="true"></i> Login</span></a></li>
+                        <li><a href="{{ url_for('register') }}"><span><i class="fas fa-user-plus accent-highlight" aria-hidden="true"></i> Register</span></a></li>
                         {% endif %}
                     </ul>
-                    <div class="mobile-toggle">
+                    <div class="mobile-toggle" aria-label="Toggle menu" role="button" tabindex="0">
                         <div class="bar"></div>
                         <div class="bar"></div>
                         <div class="bar"></div>
@@ -44,7 +51,7 @@
             </div>
         </header>
         
-        <main>
+        <main id="main-content">
             {% block content %}{% endblock %}
         </main>
         
@@ -54,11 +61,11 @@
                     <h3 class="footer-title">SURVION</h3>
                     <p>Advanced AI-powered detection for enhanced security monitoring</p>
                     <div class="social-icons">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github" aria-hidden="true"></i></a>
                     </div>
                 </div>
                 
@@ -66,7 +73,7 @@
                     <h3 class="footer-title">Quick Links</h3>
                     <ul class="footer-links">
                         <li><a href="{{ url_for('index') }}">Home</a></li>
-                        <li><a href="#">About</a></li>
+                        <li><a href="#bluecore">BlueCore Technology</a></li>
                         <li><a href="#">Services</a></li>
                         <li><a href="#">Contact</a></li>
                     </ul>
@@ -84,9 +91,9 @@
                 <div class="footer-section">
                     <h3 class="footer-title">Contact</h3>
                     <ul class="contact-info">
-                        <li><i class="fas fa-map-marker-alt accent-highlight"></i> 123 Tech Street, City</li>
-                        <li><i class="fas fa-envelope"></i> info@survion.com</li>
-                        <li><i class="fas fa-phone accent-highlight"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-map-marker-alt accent-highlight" aria-hidden="true"></i> 123 Tech Street, City</li>
+                        <li><i class="fas fa-envelope" aria-hidden="true"></i> <a href="mailto:info@survion.com">info@survion.com</a></li>
+                        <li><i class="fas fa-phone accent-highlight" aria-hidden="true"></i> <a href="tel:+15551234567">+1 (555) 123-4567</a></li>
                     </ul>
                 </div>
             </div>
@@ -95,7 +102,7 @@
                 <div class="container">
                     <p>&copy; 2025 Survion - Suspicious Activity Detection</p>
                     <div class="credits">
-                        <span>Powered by <i class="fas fa-bolt accent-highlight"></i> Advanced AI</span>
+                        <span>Powered by <i class="fas fa-bolt accent-highlight" aria-hidden="true"></i> Advanced AI</span>
                     </div>
                 </div>
             </div>

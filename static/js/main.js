@@ -215,49 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Also check on page load
     checkStatsVisibility();
     
-    // Custom cursor implementation
-    const cursor = document.createElement('div');
-    cursor.className = 'cursor-dot';
-    document.body.appendChild(cursor);
-    
-    const cursorOutline = document.createElement('div');
-    cursorOutline.className = 'cursor-outline';
-    document.body.appendChild(cursorOutline);
-    
-    document.addEventListener('mousemove', e => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-        
-        cursorOutline.style.left = e.clientX + 'px';
-        cursorOutline.style.top = e.clientY + 'px';
-    });
-    
-    document.addEventListener('mousedown', () => {
-        cursor.style.transform = 'scale(0.7)';
-        cursorOutline.style.transform = 'scale(0.7)';
-    });
-    
-    document.addEventListener('mouseup', () => {
-        cursor.style.transform = 'scale(1)';
-        cursorOutline.style.transform = 'scale(1)';
-    });
-    
-    // Grow cursor on interactive elements
-    const interactiveElements = document.querySelectorAll('a, button, .btn, input, select, textarea');
-    interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            cursor.style.transform = 'scale(1.5)';
-            cursorOutline.style.transform = 'scale(1.5)';
-            cursorOutline.style.borderColor = 'var(--primary-color)';
-        });
-        
-        el.addEventListener('mouseleave', () => {
-            cursor.style.transform = 'scale(1)';
-            cursorOutline.style.transform = 'scale(1)';
-            cursorOutline.style.borderColor = 'var(--primary-color)';
-        });
-    });
-    
     // Testimonial slider
     let currentSlide = 0;
     const testimonials = document.querySelectorAll('.testimonial');
