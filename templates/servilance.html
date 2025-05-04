@@ -1,0 +1,647 @@
+{% extends "base.html" %}
+
+{% block title %}SURVION - Suspicious Activity Detection{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detection-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 20px;
+        padding: 20px;
+        background-color: #060c1f;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        margin: 20px auto;
+        max-width: 1600px;
+    }
+
+    .video-feed-container {
+        position: relative;
+        width: 100%;
+        background-color: #0a1126;
+        border-radius: 5px;
+        overflow: hidden;
+        border: 1px solid #1e90ff;
+        box-shadow: 0 0 15px rgba(0, 100, 255, 0.3);
+    }
+
+    .video-feed {
+        width: 100%;
+        height: 500px;
+        background-color: #000;
+        object-fit: cover;
+    }
+
+    .camera-error {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(255, 0, 0, 0.7);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        background-color: #0c1530;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.3s ease;
+        margin-left: 10px;
+    }
+
+    .btn-primary {
+        background-color: #1e90ff;
+    }
+
+    .btn-danger {
+        background-color: #ff4757;
+    }
+
+    .btn-warning {
+        background-color: #ffa502;
+    }
+
+    .btn-info {
+        background-color: #17c0eb;
+    }
+
+    .btn:hover {
+        opacity: 0.8;
+        transform: translateY(-2px);
+    }
+
+    .config-panel, .alerts-panel {
+        background-color: #0a1126;
+        border-radius: 5px;
+        padding: 15px;
+        border: 1px solid #1e90ff;
+        box-shadow: 0 0 15px rgba(0, 100, 255, 0.3);
+    }
+
+    .panel-header {
+        color: #1e90ff;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .slider-container {
+        margin-bottom: 20px;
+    }
+
+    .slider-label {
+        color: #fff;
+        margin-bottom: 5px;
+    }
+
+    .slider {
+        width: 100%;
+        -webkit-appearance: none;
+        height: 8px;
+        border-radius: 5px;
+        background: linear-gradient(to right, #0c1530, #1e90ff);
+        outline: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #1e90ff;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .slider-value {
+        color: #1e90ff;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .alert-input {
+        width: 100%;
+        padding: 10px;
+        background-color: #0c1530;
+        border: 1px solid #1e90ff;
+        border-radius: 5px;
+        color: white;
+        margin-bottom: 20px;
+    }
+
+    .update-btn {
+        width: 100%;
+        padding: 10px;
+        background-color: #1e90ff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .alerts-panel {
+        margin-top: 20px;
+    }
+
+    .alert-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .alert-item {
+        background-color: #0c1530;
+        border-left: 3px solid #ff4757;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 3px;
+    }
+
+    .screenshot-info {
+        margin-top: 5px;
+        font-size: 0.9em;
+        color: #1e90ff;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        border-top: 1px dotted rgba(30, 144, 255, 0.3);
+        padding-top: 5px;
+    }
+
+    .screenshot-info i {
+        color: #ffa502;
+    }
+
+    .view-screenshot {
+        margin-left: auto;
+        background-color: #1e90ff;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 0.85em;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        transition: all 0.2s ease;
+    }
+
+    .view-screenshot:hover {
+        background-color: #0c7cd5;
+        transform: translateY(-1px);
+    }
+
+    .live-detections {
+        background-color: #0a1126;
+        border-radius: 5px;
+        padding: 15px;
+        margin-top: 20px;
+        border: 1px solid #1e90ff;
+        box-shadow: 0 0 15px rgba(0, 100, 255, 0.3);
+    }
+
+    .detection-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #1e90ff;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+
+    .detection-badge {
+        display: inline-block;
+        background-color: #0c1530;
+        border: 1px solid #0c1530;
+        border-radius: 20px;
+        padding: 5px 15px;
+        margin: 5px;
+        font-size: 14px;
+        color: white;
+    }
+
+    .confidence {
+        margin-left: 5px;
+        color: #1e90ff;
+    }
+
+    /* Loading spinner */
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-top: 4px solid #1e90ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Responsive design */
+    @media (max-width: 1200px) {
+        .detection-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- <div class="section-heading">
+        <h1><i class="fas fa-shield-alt"></i> SUSPICIOUS ACTIVITY DETECTION</h1>
+    </div> -->
+
+    <div class="detection-container">
+        <!-- Left section - Video feed and detection controls -->
+        <div class="main-panel">
+            <div class="video-feed-container">
+                <img id="video-feed" class="video-feed" src="{{ url_for('video_feed') }}" alt="Video Feed">
+                <div class="camera-error" id="camera-error" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i> Camera Error
+                </div>
+                <div id="loading-spinner" class="spinner"></div>
+            </div>
+            <div class="controls">
+                <button id="start-detection" class="btn btn-primary" style="margin: 0;">
+                    <i class="fas fa-play"></i> Start Detection
+                </button>
+                <button id="stop-detection" class="btn btn-danger" disabled>
+                    <i class="fas fa-stop"></i> Stop Detection
+                </button>
+                <button id="clear-alerts" class="btn btn-warning">
+                    <i class="fas fa-trash"></i> Clear Alerts
+                </button>
+                <button id="capture-screenshot" class="btn btn-info">
+                    <i class="fas fa-camera"></i> Capture Screenshot
+                </button>
+            </div>
+
+            <div class="live-detections">
+                <div class="detection-title">
+                    <i class="fas fa-eye"></i> Live Detections
+                </div>
+                <div id="detection-list">
+                    <!-- Detection items will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right section - Configuration and alerts -->
+        <div class="side-panel">
+            <div class="config-panel">
+                <div class="panel-header">
+                    <i class="fas fa-cog"></i> Configuration
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">Pose Detection Confidence:</div>
+                    <input type="range" min="0" max="1" step="0.01" value="0.75" class="slider" id="pose-confidence">
+                    <div class="slider-value" id="pose-confidence-value">0.75</div>
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">YOLO Detection Confidence:</div>
+                    <input type="range" min="0" max="1" step="0.01" value="0.75" class="slider" id="yolo-confidence">
+                    <div class="slider-value" id="yolo-confidence-value">0.75</div>
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">Alert Cooldown (seconds):</div>
+                    <input type="number" min="1" max="10" value="5" class="alert-input" id="alert-cooldown">
+                </div>
+                
+                <button id="update-config" class="update-btn">
+                    <i class="fas fa-save"></i> Update Configuration
+                </button>
+            </div>
+            
+            <div class="alerts-panel">
+                <div class="panel-header">
+                    <i class="fas fa-exclamation-triangle"></i> Activity Alerts
+                </div>
+                <div id="alert-list" class="alert-list">
+                    <!-- Alert items will be added here dynamically -->
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <a href="{{ url_for('screenshots') }}" class="update-btn">
+                        <i class="fas fa-images"></i> View All Alert Screenshots
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // DOM elements
+        const startBtn = document.getElementById('start-detection');
+        const stopBtn = document.getElementById('stop-detection');
+        const clearAlertsBtn = document.getElementById('clear-alerts');
+        const captureScreenshotBtn = document.getElementById('capture-screenshot');
+        const updateConfigBtn = document.getElementById('update-config');
+        const alertList = document.getElementById('alert-list');
+        const detectionList = document.getElementById('detection-list');
+        const cameraError = document.getElementById('camera-error');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const videoFeed = document.getElementById('video-feed');
+        
+        // Slider elements
+        const poseConfidenceSlider = document.getElementById('pose-confidence');
+        const poseConfidenceValue = document.getElementById('pose-confidence-value');
+        const yoloConfidenceSlider = document.getElementById('yolo-confidence');
+        const yoloConfidenceValue = document.getElementById('yolo-confidence-value');
+        const alertCooldown = document.getElementById('alert-cooldown');
+        
+        // Socket.io connection
+        const socket = io();
+        
+        // Update slider values
+        poseConfidenceSlider.addEventListener('input', function() {
+            poseConfidenceValue.textContent = this.value;
+        });
+        
+        yoloConfidenceSlider.addEventListener('input', function() {
+            yoloConfidenceValue.textContent = this.value;
+        });
+        
+        // Socket events
+        socket.on('connect', function() {
+            console.log('Connected to server');
+        });
+        
+        socket.on('new_alert', function(data) {
+            addAlert(data);
+        });
+        
+        socket.on('detected_object', function(data) {
+            addDetection(data);
+        });
+        
+        // Start detection
+        startBtn.addEventListener('click', function() {
+            loadingSpinner.style.display = 'block';
+            
+            fetch('/start_detection', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    confidence_threshold: parseFloat(poseConfidenceSlider.value),
+                    yolo_confidence: parseFloat(yoloConfidenceSlider.value),
+                    alert_cooldown: parseInt(alertCooldown.value)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    loadingSpinner.style.display = 'none';
+                    cameraError.style.display = 'none';
+                } else {
+                    console.error('Error starting detection:', data.message);
+                    cameraError.style.display = 'flex';
+                    loadingSpinner.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error starting detection:', error);
+                cameraError.style.display = 'flex';
+                loadingSpinner.style.display = 'none';
+            });
+        });
+        
+        // Stop detection
+        stopBtn.addEventListener('click', function() {
+            fetch('/stop_detection', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    detectionList.innerHTML = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error stopping detection:', error);
+            });
+        });
+        
+        // Clear alerts
+        clearAlertsBtn.addEventListener('click', function() {
+            fetch('/clear_alerts', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alertList.innerHTML = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error clearing alerts:', error);
+            });
+        });
+        
+        // Capture screenshot
+        captureScreenshotBtn.addEventListener('click', function() {
+            fetch('/capture_screenshot', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // You could display the screenshot or provide a download link
+                    console.log('Screenshot captured:', data.filename);
+                    
+                    // Optional: Show a notification
+                    const alert = document.createElement('div');
+                    alert.className = 'alert-item';
+                    alert.innerHTML = `<strong>Screenshot captured:</strong> ${data.filename}`;
+                    alertList.prepend(alert);
+                }
+            })
+            .catch(error => {
+                console.error('Error capturing screenshot:', error);
+            });
+        });
+        
+        // Update configuration
+        updateConfigBtn.addEventListener('click', function() {
+            fetch('/update_config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    confidence_threshold: parseFloat(poseConfidenceSlider.value),
+                    yolo_confidence: parseFloat(yoloConfidenceSlider.value),
+                    alert_cooldown: parseInt(alertCooldown.value)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Show success notification
+                    const alert = document.createElement('div');
+                    alert.className = 'alert-item';
+                    alert.innerHTML = '<strong>Configuration updated successfully</strong>';
+                    alertList.prepend(alert);
+                    
+                    // Remove after 3 seconds
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating configuration:', error);
+            });
+        });
+        
+        // Get initial alerts
+        fetch('/get_alerts')
+            .then(response => response.json())
+            .then(data => {
+                data.alerts.forEach(alert => {
+                    addAlert(alert);
+                });
+            })
+            .catch(error => {
+                console.error('Error getting alerts:', error);
+            });
+        
+        // Functions to add alerts and detections
+        function addAlert(alert) {
+            const alertElement = document.createElement('div');
+            alertElement.className = 'alert-item';
+            
+            // Generate screenshot filename based on timestamp
+            const timestamp = alert.timestamp;
+            const dateObj = new Date(timestamp);
+            const formattedDate = dateObj.toISOString().replace(/[-:]/g, '').replace('T', '_').slice(0, 15);
+            const screenshotFilename = `alert_screenshot_${formattedDate}`; // Add file extension if known
+        
+            const screenshotUrl = `/static/screenshots/${screenshotFilename}.jpg`;
+        
+            alertElement.innerHTML = `
+                <div><strong>${alert.timestamp}</strong></div>
+                <div>${alert.message}</div>
+                <div>Confidence: ${alert.confidence}%</div>
+                <div class="screenshot-info">
+                    <i class="fas fa-camera"></i> Auto-screenshot captured: ${screenshotFilename}
+                    <a href="${screenshotUrl}" target="_blank" class="view-screenshot">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                </div>
+            `;
+            alertList.prepend(alertElement);
+        }
+        
+        function addDetection(detection) {
+            // Check if detection already exists
+            const existingDetection = document.querySelector(`.detection-${detection.label.replace(/\s+/g, '-')}`);
+            
+            if (existingDetection) {
+                // Update confidence
+                const confidenceSpan = existingDetection.querySelector('.confidence');
+                confidenceSpan.textContent = `${(detection.confidence * 100).toFixed(1)}%`;
+            } else {
+                // Create new detection
+                const detectionElement = document.createElement('div');
+                detectionElement.className = `detection-badge detection-${detection.label.replace(/\s+/g, '-')}`;
+                
+                // Determine badge color based on detection type
+                if (detection.is_suspicious) {
+                    detectionElement.style.borderColor = '#ff4757';
+                } else if (detection.is_theft_related) {
+                    detectionElement.style.borderColor = '#ffa502';
+                } else {
+                    detectionElement.style.borderColor = '#1e90ff';
+                }
+                
+                detectionElement.innerHTML = `
+                    ${detection.label} <span class="confidence">${(detection.confidence * 100).toFixed(1)}%</span>
+                `;
+                detectionList.appendChild(detectionElement);
+                
+                // Remove after 30 seconds if not updated
+                setTimeout(() => {
+                    if (detectionElement.parentNode) {
+                        detectionElement.remove();
+                    }
+                }, 30000);
+            }
+        }
+        
+        // Check camera status initially
+        fetch('/get_status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (data.system_status.camera_status) {
+                        cameraError.style.display = 'none';
+                    } else {
+                        cameraError.style.display = 'flex';
+                    }
+                    
+                    if (data.system_status.is_detecting) {
+                        startBtn.disabled = true;
+                        stopBtn.disabled = false;
+                    } else {
+                        startBtn.disabled = false;
+                        stopBtn.disabled = true;
+                    }
+                }
+                loadingSpinner.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error getting status:', error);
+                cameraError.style.display = 'flex';
+                loadingSpinner.style.display = 'none';
+            });
+    });
+</script>
+{% endblock %} 

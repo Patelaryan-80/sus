@@ -35,6 +35,7 @@
                         <li><a href="{{ url_for('index') }}"><span><i class="fas fa-home" aria-hidden="true"></i> Home</span></a></li>
                         <li><a href="{{ url_for('dashboard') }}"><span><i class="fas fa-tachometer-alt accent-highlight" aria-hidden="true"></i> Dashboard</span></a></li>
                         {% if 'user_id' in session %}
+                        <li><a href="{{ url_for('servilance') }}"><span><i class="fas fa-video accent-highlight" aria-hidden="true"></i> Surveillance</span></a></li>
                         <li><a href="{{ url_for('profile') }}"><span><i class="fas fa-user" aria-hidden="true"></i> Profile</span></a></li>
                         <li><a href="{{ url_for('logout') }}"><span><i class="fas fa-sign-out-alt accent-highlight" aria-hidden="true"></i> Logout</span></a></li>
                         {% else %}

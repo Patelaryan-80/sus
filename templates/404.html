@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="error-page">
+            <div class="error-code">404</div>
+            <h1><i class="fas fa-exclamation-triangle"></i> SYSTEM FAILURE</h1>
+            <div class="panel-accent-line"></div>
+            <p>The requested data path could not be located in system memory. Check coordinates and try again.</p>
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-home"></i> Return to Main Interface
+            </a>
+        </div>
+    </div>
+</body>
+</html>
