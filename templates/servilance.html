@@ -6,7 +6,7 @@
 <style>
     .detection-container {
         display: grid;
-        grid-template-columns: 1fr 350px;
+        grid-template-columns: 1fr 350px;  /* Decreased alerts section width */
         gap: 20px;
         padding: 20px;
         background-color: #060c1f;
@@ -47,13 +47,41 @@
         gap: 5px;
     }
 
+    .unauthorized-alert {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 0, 0, 0.8);
+        color: white;
+        padding: 15px 30px;
+        border-radius: 10px;
+        font-size: 24px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        z-index: 100;
+        text-align: center;
+        animation: pulsate 2s infinite;
+    }
+
+    @keyframes pulsate {
+        0% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+        50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+        100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+    }
+
     .controls {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         padding: 10px;
         background-color: #0c1530;
         border-bottom-left-radius: 5px;
         border-bottom-right-radius: 5px;
+        flex-wrap: nowrap;
+        gap: 10px;
     }
 
     .btn {
@@ -67,7 +95,7 @@
         align-items: center;
         gap: 5px;
         transition: all 0.3s ease;
-        margin-left: 10px;
+        margin: 0 5px;
     }
 
     .btn-primary {
@@ -172,7 +200,7 @@
     }
 
     .alert-list {
-        max-height: 300px;
+        max-height: 500px; /* Increased height for more alerts */
         overflow-y: auto;
     }
 
@@ -277,6 +305,67 @@
             grid-template-columns: 1fr;
         }
     }
+
+    /* Video upload styles */
+    .upload-container {
+        display: none;
+    }
+    
+    .upload-title {
+        display: none;
+    }
+    
+    .file-upload {
+        display: none;
+    }
+    
+    .file-input-container {
+        display: none;
+    }
+    
+    .file-input-container input[type=file] {
+        display: none;
+    }
+    
+    .file-input-label {
+        display: none;
+    }
+    
+    .upload-btn {
+        display: none;
+    }
+    
+    .file-name {
+        display: none;
+    }
+    
+    .video-source-toggle {
+        display: none;
+    }
+    
+    .source-option {
+        display: none;
+    }
+    
+    .source-option.active {
+        display: none;
+    }
+
+    .source-content {
+        display: none;
+    }
+    
+    .source-content.active {
+        display: block;
+    }
+
+    .processed-video-container {
+        display: none;
+    }
+    
+    .processed-video {
+        display: none;
+    }
 </style>
 {% endblock %}
 
@@ -291,29 +380,40 @@
         <div class="main-panel">
             <div class="video-feed-container">
                 <img id="video-feed" class="video-feed" src="{{ url_for('video_feed') }}" alt="Video Feed">
-                <div class="camera-error" id="camera-error" style="display: none;">
-                    <i class="fas fa-exclamation-circle"></i> Camera Error
+                <div id="unauthorized-access-alert" class="unauthorized-alert" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i> UNAUTHORIZED ACCESS DETECTED
                 </div>
-                <div id="loading-spinner" class="spinner"></div>
+                <div id="camera-error" class="camera-error" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i> Camera Error
+                </div>
+                <div id="loading-spinner" class="spinner" style="display: none;"></div>
             </div>
             <div class="controls">
-                <button id="start-detection" class="btn btn-primary" style="margin: 0;">
+                <button id="start-detection" class="btn btn-primary">
                     <i class="fas fa-play"></i> Start Detection
                 </button>
                 <button id="stop-detection" class="btn btn-danger" disabled>
                     <i class="fas fa-stop"></i> Stop Detection
                 </button>
-                <button id="clear-alerts" class="btn btn-warning">
-                    <i class="fas fa-trash"></i> Clear Alerts
-                </button>
                 <button id="capture-screenshot" class="btn btn-info">
-                    <i class="fas fa-camera"></i> Capture Screenshot
+                    <i class="fas fa-camera"></i> Capture
+                </button>
+                <button id="view-screenshots" class="btn btn-warning" onclick="window.location='/screenshots'">
+                    <i class="fas fa-images"></i> View All
                 </button>
             </div>
 
             <div class="live-detections">
                 <div class="detection-title">
                     <i class="fas fa-eye"></i> Live Detections
+                </div>
+                <div id="face-recognition-status" class="mb-3" style="display: none;">
+                    <div class="detection-badge" style="background-color: #055500; border-color: #0a8800;">
+                        <i class="fas fa-user-check"></i> Face Recognition: <span id="face-status">Active</span>
+                    </div>
+                    <div id="owner-detected-badge" class="detection-badge" style="background-color: #055500; border-color: #0a8800; display: none;">
+                        <i class="fas fa-user-shield"></i> Owner Detected
+                    </div>
                 </div>
                 <div id="detection-list">
                     <!-- Detection items will be added here dynamically -->
@@ -323,30 +423,23 @@
 
         <!-- Right section - Configuration and alerts -->
         <div class="side-panel">
+            <!-- Camera selection panel -->
             <div class="config-panel">
                 <div class="panel-header">
-                    <i class="fas fa-cog"></i> Configuration
+                    <i class="fas fa-video"></i> Camera Selection
                 </div>
                 
                 <div class="slider-container">
-                    <div class="slider-label">Pose Detection Confidence:</div>
-                    <input type="range" min="0" max="1" step="0.01" value="0.75" class="slider" id="pose-confidence">
-                    <div class="slider-value" id="pose-confidence-value">0.75</div>
+                    <div class="slider-label">Select Camera:</div>
+                    <select id="camera-select" class="alert-input">
+                        <option value="0">Camera 0 (Default)</option>
+                        <option value="1" selected>Camera 1</option>
+                        <option value="2">Camera 2</option>
+                    </select>
                 </div>
                 
-                <div class="slider-container">
-                    <div class="slider-label">YOLO Detection Confidence:</div>
-                    <input type="range" min="0" max="1" step="0.01" value="0.75" class="slider" id="yolo-confidence">
-                    <div class="slider-value" id="yolo-confidence-value">0.75</div>
-                </div>
-                
-                <div class="slider-container">
-                    <div class="slider-label">Alert Cooldown (seconds):</div>
-                    <input type="number" min="1" max="10" value="5" class="alert-input" id="alert-cooldown">
-                </div>
-                
-                <button id="update-config" class="update-btn">
-                    <i class="fas fa-save"></i> Update Configuration
+                <button id="switch-camera" class="update-btn">
+                    <i class="fas fa-exchange-alt"></i> Switch Camera
                 </button>
             </div>
             
@@ -358,6 +451,9 @@
                     <!-- Alert items will be added here dynamically -->
                 </div>
                 <div style="margin-top: 15px; text-align: center;">
+                    <button id="clear-alerts" class="update-btn" style="margin-bottom: 10px;">
+                        <i class="fas fa-trash"></i> Clear Alerts
+                    </button>
                     <a href="{{ url_for('screenshots') }}" class="update-btn">
                         <i class="fas fa-images"></i> View All Alert Screenshots
                     </a>
@@ -377,31 +473,18 @@
         const stopBtn = document.getElementById('stop-detection');
         const clearAlertsBtn = document.getElementById('clear-alerts');
         const captureScreenshotBtn = document.getElementById('capture-screenshot');
-        const updateConfigBtn = document.getElementById('update-config');
         const alertList = document.getElementById('alert-list');
         const detectionList = document.getElementById('detection-list');
         const cameraError = document.getElementById('camera-error');
         const loadingSpinner = document.getElementById('loading-spinner');
         const videoFeed = document.getElementById('video-feed');
         
-        // Slider elements
-        const poseConfidenceSlider = document.getElementById('pose-confidence');
-        const poseConfidenceValue = document.getElementById('pose-confidence-value');
-        const yoloConfidenceSlider = document.getElementById('yolo-confidence');
-        const yoloConfidenceValue = document.getElementById('yolo-confidence-value');
-        const alertCooldown = document.getElementById('alert-cooldown');
+        // Camera selection elements
+        const cameraSelect = document.getElementById('camera-select');
+        const switchCameraBtn = document.getElementById('switch-camera');
         
         // Socket.io connection
         const socket = io();
-        
-        // Update slider values
-        poseConfidenceSlider.addEventListener('input', function() {
-            poseConfidenceValue.textContent = this.value;
-        });
-        
-        yoloConfidenceSlider.addEventListener('input', function() {
-            yoloConfidenceValue.textContent = this.value;
-        });
         
         // Socket events
         socket.on('connect', function() {
@@ -416,6 +499,15 @@
             addDetection(data);
         });
         
+        // Socket event for unauthorized access alert status
+        socket.on('unauthorized_status', function(data) {
+            if (data.show_unauthorized_alert) {
+                document.getElementById('unauthorized-access-alert').style.display = 'flex';
+            } else {
+                document.getElementById('unauthorized-access-alert').style.display = 'none';
+            }
+        });
+        
         // Start detection
         startBtn.addEventListener('click', function() {
             loadingSpinner.style.display = 'block';
@@ -426,9 +518,9 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    confidence_threshold: parseFloat(poseConfidenceSlider.value),
-                    yolo_confidence: parseFloat(yoloConfidenceSlider.value),
-                    alert_cooldown: parseInt(alertCooldown.value)
+                    confidence_threshold: 0.4,  // Using default values
+                    yolo_confidence: 0.4,
+                    alert_cooldown: 3
                 })
             })
             .then(response => response.json())
@@ -438,6 +530,11 @@
                     stopBtn.disabled = false;
                     loadingSpinner.style.display = 'none';
                     cameraError.style.display = 'none';
+                    
+                    // We don't initialize the unauthorized alert here anymore
+                    // It will be controlled by the socket events based on camera data
+                    document.getElementById('owner-detected-badge').style.display = 'none';
+                    document.getElementById('unauthorized-access-alert').style.display = 'none';
                 } else {
                     console.error('Error starting detection:', data.message);
                     cameraError.style.display = 'flex';
@@ -508,37 +605,104 @@
             });
         });
         
-        // Update configuration
-        updateConfigBtn.addEventListener('click', function() {
-            fetch('/update_config', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    confidence_threshold: parseFloat(poseConfidenceSlider.value),
-                    yolo_confidence: parseFloat(yoloConfidenceSlider.value),
-                    alert_cooldown: parseInt(alertCooldown.value)
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Show success notification
-                    const alert = document.createElement('div');
-                    alert.className = 'alert-item';
-                    alert.innerHTML = '<strong>Configuration updated successfully</strong>';
-                    alertList.prepend(alert);
+        // Switch camera functionality
+        switchCameraBtn.addEventListener('click', function() {
+            // Show the loading spinner while switching
+            loadingSpinner.style.display = 'block';
+            
+            // First stop detection if running
+            fetch('/stop_detection', { method: 'POST' })
+                .then(response => response.json())
+                .then(() => {
+                    console.log("Detection stopped for camera switch");
                     
-                    // Remove after 3 seconds
+                    // Create notification
+                    const switchingAlert = document.createElement('div');
+                    switchingAlert.className = 'alert-item';
+                    switchingAlert.innerHTML = `<strong>Switching to Camera ${cameraSelect.value}...</strong>`;
+                    alertList.prepend(switchingAlert);
+                    
+                    // Wait longer for camera to be properly released
                     setTimeout(() => {
-                        alert.remove();
-                    }, 3000);
-                }
-            })
-            .catch(error => {
-                console.error('Error updating configuration:', error);
-            });
+                        // Update the camera configuration
+                        fetch('/update_config', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                camera_index: parseInt(cameraSelect.value),
+                                face_detection_interval: 1  // Set to check faces more frequently
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success' || data.status === 'warning') {
+                                // Wait a bit longer before starting detection with the new camera
+                                setTimeout(() => {
+                                    // Show success notification
+                                    const alert = document.createElement('div');
+                                    alert.className = 'alert-item';
+                                    alert.innerHTML = `<strong>Camera switched to Camera ${cameraSelect.value}</strong>`;
+                                    alertList.prepend(alert);
+                                    
+                                    // Start detection with the new camera
+                                    fetch('/start_detection', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            camera_index: parseInt(cameraSelect.value),  // Ensure camera index is included
+                                            confidence_threshold: 0.4,
+                                            yolo_confidence: 0.4,
+                                            alert_cooldown: 3
+                                        })
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.status === 'success') {
+                                            console.log("Detection started successfully with new camera");
+                                            startBtn.disabled = true;
+                                            stopBtn.disabled = false;
+                                            loadingSpinner.style.display = 'none';
+                                            // Force reload the video feed by updating the src
+                                            videoFeed.src = videoFeed.src.split('?')[0] + '?t=' + new Date().getTime();
+                                        } else {
+                                            console.error("Failed to start detection:", data.message);
+                                            alert.innerHTML = `<strong>Failed to start detection: ${data.message}</strong>`;
+                                            loadingSpinner.style.display = 'none';
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error("Error starting detection:", error);
+                                        alert.innerHTML = `<strong>Error starting detection: ${error.message}</strong>`;
+                                        loadingSpinner.style.display = 'none';
+                                    });
+                                }, 2000); // Wait 2 seconds before starting detection
+                            } else {
+                                // Show error if camera switch failed
+                                switchingAlert.innerHTML = `<strong>Error switching camera: ${data.message || 'Unknown error'}</strong>`;
+                                loadingSpinner.style.display = 'none';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error switching camera:', error);
+                            switchingAlert.innerHTML = `<strong>Error switching camera: ${error.message || 'Unknown error'}</strong>`;
+                            loadingSpinner.style.display = 'none';
+                        });
+                    }, 2000); // Wait 2 seconds after stopping before updating config
+                })
+                .catch(error => {
+                    console.error('Error stopping detection:', error);
+                    loadingSpinner.style.display = 'none';
+                    
+                    // Show error notification
+                    const errorAlert = document.createElement('div');
+                    errorAlert.className = 'alert-item';
+                    errorAlert.innerHTML = `<strong>Error stopping detection: ${error.message || 'Unknown error'}</strong>`;
+                    alertList.prepend(errorAlert);
+                });
         });
         
         // Get initial alerts
@@ -555,6 +719,10 @@
         
         // Functions to add alerts and detections
         function addAlert(alert) {
+            console.log("Alert received:", alert);
+            
+            // Display all alerts instead of filtering
+            
             const alertElement = document.createElement('div');
             alertElement.className = 'alert-item';
             
@@ -562,7 +730,17 @@
             const timestamp = alert.timestamp;
             const dateObj = new Date(timestamp);
             const formattedDate = dateObj.toISOString().replace(/[-:]/g, '').replace('T', '_').slice(0, 15);
-            const screenshotFilename = `alert_screenshot_${formattedDate}`; // Add file extension if known
+            // Determine screenshot filename based on alert type
+            let screenshotFilename;
+            if (alert.alert_type && alert.alert_type.includes("Multiple Persons")) {
+                screenshotFilename = `multiple_persons_alert_${formattedDate}`;
+            } else if (alert.alert_type && alert.alert_type.includes("Restricted Area")) {
+                screenshotFilename = `restricted_alert_${formattedDate}`;
+            } else if (alert.alert_type && alert.alert_type.includes("Theft")) {
+                screenshotFilename = `theft_alert_${formattedDate}`;
+            } else {
+                screenshotFilename = `suspicious_alert_${formattedDate}`;
+            }
         
             const screenshotUrl = `/static/screenshots/${screenshotFilename}.jpg`;
         
@@ -616,6 +794,38 @@
             }
         }
         
+        // Check face recognition status
+        function checkFaceRecognitionStatus() {
+            fetch('/get_config')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.config && data.config.face_recognition_enabled) {
+                        document.getElementById('face-recognition-status').style.display = 'block';
+                        document.getElementById('face-status').textContent = 'Active';
+                    } else {
+                        document.getElementById('face-recognition-status').style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking face recognition status:', error);
+                });
+        }
+        
+        // Initialize face recognition status check
+        checkFaceRecognitionStatus();
+        
+        // Socket event for owner detection
+        socket.on('owner_detected', function(data) {
+            if (data.is_owner_present) {
+                document.getElementById('owner-detected-badge').style.display = 'inline-block';
+                document.getElementById('unauthorized-access-alert').style.display = 'none'; // Hide unauthorized alert
+            } else {
+                document.getElementById('owner-detected-badge').style.display = 'none';
+                // Don't show unauthorized alert automatically - it will be controlled by socket events
+                document.getElementById('unauthorized-access-alert').style.display = 'none';
+            }
+        });
+        
         // Check camera status initially
         fetch('/get_status')
             .then(response => response.json())
@@ -630,6 +840,17 @@
                     if (data.system_status.is_detecting) {
                         startBtn.disabled = true;
                         stopBtn.disabled = false;
+                        // Check face recognition when detection is already running
+                        checkFaceRecognitionStatus();
+                        
+                        // Initialize unauthorized access alert based on owner detection
+                        if (data.system_status.owner_detected) {
+                            document.getElementById('owner-detected-badge').style.display = 'inline-block';
+                            document.getElementById('unauthorized-access-alert').style.display = 'none';
+                        } else {
+                            document.getElementById('owner-detected-badge').style.display = 'none';
+                            document.getElementById('unauthorized-access-alert').style.display = 'none';
+                        }
                     } else {
                         startBtn.disabled = false;
                         stopBtn.disabled = true;
@@ -642,6 +863,10 @@
                 cameraError.style.display = 'flex';
                 loadingSpinner.style.display = 'none';
             });
+
+                // Video upload handling removed
+        
+                // File input and form submission code removed
     });
 </script>
 {% endblock %} 

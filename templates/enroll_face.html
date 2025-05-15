@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Enrollment</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #060c1f;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #0a1126;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1e90ff;
+        }
+        
+        h1 {
+            color: #1e90ff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .camera-container {
+            width: 100%;
+            position: relative;
+            margin-bottom: 20px;
+            border: 2px solid #1e90ff;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        #webcam {
+            width: 100%;
+            height: 400px;
+            background-color: #000;
+            object-fit: cover;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #1e90ff;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #ff4757;
+            color: white;
+        }
+        
+        .preview-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            border: 2px solid #1e90ff;
+            border-radius: 5px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        #preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .notification {
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .notification-success {
+            background-color: rgba(46, 204, 113, 0.2);
+            border: 1px solid #2ecc71;
+            color: #2ecc71;
+        }
+        
+        .notification-error {
+            background-color: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+        }
+        
+        .instructions {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #1e90ff;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Face Enrollment</h1>
+        
+        <div class="instructions">
+            <p>Please position your face clearly in the camera view and click "Capture Face" to register yourself as an owner.</p>
+            <p>Once enrolled, the system will recognize you in the restricted room and will not trigger alerts when you are present.</p>
+        </div>
+        
+        <div class="camera-container">
+            <video id="webcam" autoplay></video>
+            <canvas id="canvas" style="display:none;"></canvas>
+        </div>
+        
+        <div class="controls">
+            <button id="capture-btn" class="btn btn-primary">
+                <i class="fas fa-camera"></i> Capture Face
+            </button>
+            <button id="reset-btn" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Reset
+            </button>
+        </div>
+        
+        <div class="preview-container" id="face-preview">
+            <img id="preview-image" src="" alt="Face Preview">
+        </div>
+        
+        <div class="notification notification-success" id="success-notification">
+            <span id="success-message">Face enrolled successfully!</span>
+        </div>
+        
+        <div class="notification notification-error" id="error-notification">
+            <span id="error-message">Error enrolling face.</span>
+        </div>
+        
+        <a href="/owner_faces" class="back-link">Back to Owner Management</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('webcam');
+            const canvas = document.getElementById('canvas');
+            const captureBtn = document.getElementById('capture-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const facePreview = document.getElementById('face-preview');
+            const previewImage = document.getElementById('preview-image');
+            const successNotification = document.getElementById('success-notification');
+            const errorNotification = document.getElementById('error-notification');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            
+            let stream = null;
+            
+            // Start camera
+            function startCamera() {
+                navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: "user"
+                    }, 
+                    audio: false 
+                })
+                .then(function(mediaStream) {
+                    stream = mediaStream;
+                    video.srcObject = mediaStream;
+                    video.onloadedmetadata = function(e) {
+                        video.play();
+                    };
+                })
+                .catch(function(err) {
+                    console.error("Error accessing webcam:", err);
+                    showError("Could not access webcam. Please ensure you have granted camera permissions.");
+                });
+            }
+            
+            // Capture face
+            captureBtn.addEventListener('click', function() {
+                if (!stream) {
+                    showError("Camera not available. Please refresh the page and allow camera access.");
+                    return;
+                }
+                
+                // Draw current video frame to canvas
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // Get image data
+                const imageData = canvas.toDataURL('image/jpeg');
+                
+                // Show preview
+                previewImage.src = imageData;
+                facePreview.style.display = 'block';
+                
+                // Upload to server
+                enrollFace(imageData);
+            });
+            
+            // Reset face
+            resetBtn.addEventListener('click', function() {
+                // Hide preview
+                facePreview.style.display = 'none';
+                
+                // Hide notifications
+                successNotification.style.display = 'none';
+                errorNotification.style.display = 'none';
+                
+                // Remove face from server
+                removeFace();
+            });
+            
+            // Enroll face
+            function enrollFace(imageData) {
+                const formData = new FormData();
+                formData.append('face_image', imageData);
+                
+                fetch('/enroll_face', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showSuccess(data.message);
+                    } else {
+                        showError(data.message);
+                        facePreview.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    showError("Error enrolling face: " + error.message);
+                    facePreview.style.display = 'none';
+                });
+            }
+            
+            // Remove face
+            function removeFace() {
+                fetch('/remove_face', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showSuccess(data.message);
+                    } else {
+                        showError(data.message);
+                    }
+                })
+                .catch(error => {
+                    showError("Error removing face: " + error.message);
+                });
+            }
+            
+            // Show success notification
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successNotification.style.display = 'block';
+                errorNotification.style.display = 'none';
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    successNotification.style.display = 'none';
+                }, 5000);
+            }
+            
+            // Show error notification
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorNotification.style.display = 'block';
+                successNotification.style.display = 'none';
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    errorNotification.style.display = 'none';
+                }, 5000);
+            }
+            
+            // Add start camera button
+            const videoElement = document.getElementById('webcam');
+            
+            // Create a start camera button
+            const startCameraBtn = document.createElement('button');
+            startCameraBtn.id = 'start-camera-btn';
+            startCameraBtn.className = 'btn btn-primary';
+            startCameraBtn.textContent = 'Start Camera';
+            startCameraBtn.style.position = 'absolute';
+            startCameraBtn.style.top = '50%';
+            startCameraBtn.style.left = '50%';
+            startCameraBtn.style.transform = 'translate(-50%, -50%)';
+            startCameraBtn.style.zIndex = '10';
+            
+            // Insert button before video
+            videoElement.parentNode.insertBefore(startCameraBtn, videoElement);
+            
+            // Add click event
+            startCameraBtn.addEventListener('click', function() {
+                startCamera();
+                this.remove(); // Remove the button after clicking
+            });
+            
+            // Clean up on page unload
+            window.addEventListener('beforeunload', function() {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
