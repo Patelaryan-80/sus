@@ -11,18 +11,7 @@
             <h3>SUR<span class="accent-highlight">VION</span></h3>
         </div>
         
-        <div class="sidebar-menu">
-            <ul>
-                <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="{{ url_for('servilance') }}"><i class="fas fa-video accent-highlight"></i> Surveillance</a></li>
-                <li><a href="#"><i class="fas fa-history"></i> Activity Log</a></li>
-                <li><a href="#"><i class="fas fa-chart-bar accent-highlight"></i> Analytics</a></li>
-                <li><a href="#"><i class="fas fa-microchip"></i> BlueCore</a></li>
-                <li><a href="#"><i class="fas fa-cog accent-highlight"></i> Settings</a></li>
-                <li><a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a></li>
-                <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-            </ul>
-        </div>
+                <div class="sidebar-menu">            <ul>                <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>                <li><a href="{{ url_for('servilance') }}"><i class="fas fa-video accent-highlight"></i> Surveillance</a></li>                <li><a href="{{ url_for('owner_faces') }}"><i class="fas fa-user-circle accent-highlight"></i> Face Recognition</a></li>                <li><a href="{{ url_for('screenshots') }}"><i class="fas fa-images"></i> Screenshots</a></li>                <li><a href="#"><i class="fas fa-history"></i> Activity Log</a></li>                <li><a href="#"><i class="fas fa-chart-bar accent-highlight"></i> Analytics</a></li>                <li><a href="#"><i class="fas fa-microchip"></i> BlueCore</a></li>                <li><a href="#"><i class="fas fa-cog accent-highlight"></i> Settings</a></li>                <li><a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a></li>                <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>            </ul>        </div>
     </div>
     
     <!-- Main Content -->
@@ -106,6 +95,68 @@
             </div>
         </div>
         
+        <!-- Email Alert Settings -->
+        <div class="dashboard-section">
+            <h3>Email <span class="accent-highlight">Alert Settings</span></h3>
+            <div class="dashboard-action-card neon-element accent-border">
+                <div class="action-content">
+                    <div>
+                        <h4><i class="fas fa-envelope accent-highlight"></i> Security Alert Notifications</h4>
+                        <p>Configure email alerts for suspicious activities.</p>
+                    </div>
+                </div>
+                <div class="email-settings-form">
+                    <div class="neon-alert" id="emailAlert" style="display:none;"></div>
+                    <form id="emailSettingsForm" class="neon-form">
+                        <div class="form-group">
+                            <label for="emailInterval"><i class="fas fa-clock"></i> Alert Interval (seconds)</label>
+                            <input type="number" id="emailInterval" name="emailInterval" min="5" value="30" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="mailUsername"><i class="fas fa-user"></i> Email Username</label>
+                            <input type="text" id="mailUsername" name="mailUsername" class="form-control" placeholder="Your Gmail address">
+                            <small class="form-text">For Gmail, use your complete email address</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="mailPassword"><i class="fas fa-lock"></i> Email Password</label>
+                            <input type="password" id="mailPassword" name="mailPassword" class="form-control" placeholder="Your email password">
+                            <small class="form-text">For Gmail, use an <a href="https://support.google.com/accounts/answer/185833" target="_blank">App Password</a> for best security</small>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn accent-bg">Save Settings</button>
+                            <button type="button" id="testEmailBtn" class="btn btn-secondary">Test Email</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Make User Owner -->
+        <div class="dashboard-section">
+            <h3>Owner <span class="accent-highlight">Management</span></h3>
+            <div class="dashboard-action-card neon-element accent-border">
+                <div class="action-content">
+                    <div>
+                        <h4><i class="fas fa-user-shield accent-highlight"></i> Add Owner Account</h4>
+                        <p>Make an existing user an owner to receive security alert emails.</p>
+                    </div>
+                </div>
+                <div class="email-settings-form">
+                    <div class="neon-alert" id="ownerAlert" style="display:none;"></div>
+                    <form id="makeOwnerForm" class="neon-form">
+                        <div class="form-group">
+                            <label for="ownerUsername"><i class="fas fa-user"></i> Username</label>
+                            <input type="text" id="ownerUsername" name="ownerUsername" class="form-control" placeholder="Enter existing username">
+                            <small class="form-text">Enter the username of an existing account you want to make an owner</small>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn accent-bg">Make Owner</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
         <!-- System Performance -->
         <div class="dashboard-section">
             <h3>System <span class="accent-highlight">Performance</span></h3>
@@ -137,4 +188,176 @@
         </div>
     </div>
 </div>
+
+<!-- Add JavaScript for the email settings form -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const emailForm = document.getElementById('emailSettingsForm');
+    const testEmailBtn = document.getElementById('testEmailBtn');
+    const emailAlert = document.getElementById('emailAlert');
+    const makeOwnerForm = document.getElementById('makeOwnerForm');
+    const ownerAlert = document.getElementById('ownerAlert');
+    
+    // Setup Socket.IO connection for real-time updates
+    const socket = io();
+    
+    // Listen for email test results from socket
+    socket.on('email_test_result', function(data) {
+        if (data.status === 'success') {
+            showAlert(emailAlert, 'Test email sent successfully! Check your inbox.', 'success');
+        } else {
+            showAlert(emailAlert, 'Email test failed: ' + data.message, 'error');
+        }
+        
+        // Reset button state
+        testEmailBtn.disabled = false;
+        testEmailBtn.innerHTML = 'Test Email';
+    });
+    
+    // Function to show alerts
+    function showAlert(alert, message, type) {
+        alert.innerHTML = message;
+        alert.className = 'neon-alert ' + (type === 'success' ? 'success' : 'error');
+        alert.style.display = 'block';
+        
+        // Scroll to alert
+        alert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Hide after 10 seconds
+        setTimeout(() => {
+            alert.style.display = 'none';
+        }, 10000);
+    }
+    
+    // Handle email settings form submission
+    emailForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            email_interval: document.getElementById('emailInterval').value,
+            mail_username: document.getElementById('mailUsername').value,
+            mail_password: document.getElementById('mailPassword').value
+        };
+        
+        // Basic validation
+        if (!formData.mail_username || !formData.mail_password) {
+            showAlert(emailAlert, 'Please provide both email username and password.', 'error');
+            return;
+        }
+        
+        fetch('/update_email_settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showAlert(emailAlert, 'Email settings updated successfully. You can test your settings with the Test Email button.', 'success');
+            } else {
+                showAlert(emailAlert, 'Error: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert(emailAlert, 'An error occurred while updating email settings', 'error');
+        });
+    });
+    
+    // Handle test email button click
+    testEmailBtn.addEventListener('click', function() {
+        // First check if credentials are filled
+        const username = document.getElementById('mailUsername').value;
+        const password = document.getElementById('mailPassword').value;
+        
+        if (!username || !password) {
+            showAlert(emailAlert, 'Please save your email settings first before testing.', 'error');
+            return;
+        }
+        
+        // Show loading state
+        testEmailBtn.disabled = true;
+        testEmailBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+        
+        // Call test email endpoint
+        fetch('/test_email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'pending') {
+                // Test is running in background, keep waiting for Socket.IO event
+                showAlert(emailAlert, 'Email test started. Please wait for results...', 'success');
+            } else if (data.status === 'success') {
+                showAlert(emailAlert, 'Test email sent successfully! Check your inbox.', 'success');
+                // Reset button state
+                testEmailBtn.disabled = false;
+                testEmailBtn.innerHTML = 'Test Email';
+            } else {
+                showAlert(emailAlert, 'Email test failed: ' + data.message, 'error');
+                // Reset button state
+                testEmailBtn.disabled = false;
+                testEmailBtn.innerHTML = 'Test Email';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert(emailAlert, 'An error occurred while testing email settings', 'error');
+            // Reset button state
+            testEmailBtn.disabled = false;
+            testEmailBtn.innerHTML = 'Test Email';
+        });
+    });
+    
+    // Handle make owner form submission
+    makeOwnerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('ownerUsername').value.trim();
+        
+        if (!username) {
+            showAlert(ownerAlert, 'Please enter a username.', 'error');
+            return;
+        }
+        
+        // Show loading
+        const submitBtn = makeOwnerForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        
+        // Call make owner endpoint
+        fetch('/make_owner', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username: username })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showAlert(ownerAlert, 'User "' + username + '" is now an owner and will receive security alerts.', 'success');
+                // Clear the input field
+                document.getElementById('ownerUsername').value = '';
+            } else {
+                showAlert(ownerAlert, 'Error: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert(ownerAlert, 'An error occurred while updating owner status', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Make Owner';
+        });
+    });
+});
+</script>
 {% endblock %} 

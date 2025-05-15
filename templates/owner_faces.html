@@ -1,0 +1,526 @@
+{% extends "base.html" %}
+
+{% block title %}SURVION - Owner Face Enrollment{% endblock %}
+
+{% block extra_css %}
+<style>
+    .enrollment-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 20px;
+        padding: 20px;
+        background-color: #060c1f;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        margin: 20px auto;
+        max-width: 1600px;
+    }
+
+    .camera-panel {
+        background-color: #0a1126;
+        border-radius: 5px;
+        overflow: hidden;
+        border: 1px solid #1e90ff;
+        box-shadow: 0 0 15px rgba(0, 100, 255, 0.3);
+    }
+
+    .video-feed {
+        width: 100%;
+        height: 480px;
+        background-color: #000;
+        object-fit: cover;
+    }
+
+    .camera-error {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(255, 0, 0, 0.7);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        background-color: #0c1530;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.3s ease;
+        margin-left: 10px;
+    }
+
+    .btn-primary {
+        background-color: #1e90ff;
+    }
+
+    .btn-danger {
+        background-color: #ff4757;
+    }
+
+    .info-panel {
+        background-color: #0a1126;
+        border-radius: 5px;
+        padding: 15px;
+        border: 1px solid #1e90ff;
+        box-shadow: 0 0 15px rgba(0, 100, 255, 0.3);
+    }
+
+    .panel-header {
+        color: #1e90ff;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .instructions {
+        margin-bottom: 20px;
+        color: #fff;
+        line-height: 1.6;
+    }
+
+    .instructions ul {
+        padding-left: 20px;
+    }
+
+    .instructions li {
+        margin-bottom: 10px;
+    }
+
+    .status-panel {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 5px;
+        background-color: #0c1530;
+    }
+
+    .status-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        color: #fff;
+    }
+
+    .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .status-active {
+        background-color: #2ecc71;
+    }
+
+    .status-inactive {
+        background-color: #e74c3c;
+    }
+
+    .status-pending {
+        background-color: #f39c12;
+    }
+
+    .face-preview {
+        width: 200px;
+        height: 200px;
+        margin: 20px auto;
+        border: 2px solid #1e90ff;
+        border-radius: 5px;
+        overflow: hidden;
+        display: none;
+    }
+
+    .face-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .notification {
+        padding: 10px 15px;
+        margin: 10px 0;
+        border-radius: 5px;
+        display: none;
+    }
+
+    .notification-success {
+        background-color: rgba(46, 204, 113, 0.2);
+        border: 1px solid #2ecc71;
+        color: #2ecc71;
+    }
+
+    .notification-error {
+        background-color: rgba(231, 76, 60, 0.2);
+        border: 1px solid #e74c3c;
+        color: #e74c3c;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="section-heading">
+        <h1><i class="fas fa-user-shield"></i> OWNER FACE ENROLLMENT</h1>
+    </div>
+
+    <div class="enrollment-container">
+        <div class="camera-panel">
+            <div style="position: relative;">
+                <video id="webcam" class="video-feed" autoplay></video>
+                <canvas id="canvas" style="display:none;"></canvas>
+                <div id="camera-error" class="camera-error" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i> Camera Error
+                </div>
+            </div>
+            <div class="controls">
+                <button id="capture-btn" class="btn btn-primary">
+                    <i class="fas fa-camera"></i> Capture Face
+                </button>
+                <button id="reset-btn" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Reset
+                </button>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="panel-header">
+                <i class="fas fa-info-circle"></i> Face Enrollment Instructions
+            </div>
+            
+            <div class="instructions">
+                <p>Register your face to be recognized as an owner for the restricted room access system. When your face is recognized, alerts will be paused automatically.</p>
+                
+                <ul>
+                    <li>Position your face clearly in the camera.</li>
+                    <li>Ensure good lighting on your face.</li>
+                    <li>Remove glasses, hats, or other items that may obscure your face.</li>
+                    <li>Look directly at the camera.</li>
+                    <li>Click "Capture Face" when ready.</li>
+                </ul>
+            </div>
+            
+            <div class="face-preview" id="face-preview">
+                <img id="preview-image" src="" alt="Face Preview">
+            </div>
+            
+            <div class="notification notification-success" id="success-notification">
+                <i class="fas fa-check-circle"></i> <span id="success-message">Face enrolled successfully!</span>
+            </div>
+            
+            <div class="notification notification-error" id="error-notification">
+                <i class="fas fa-exclamation-circle"></i> <span id="error-message">Error enrolling face.</span>
+            </div>
+            
+            <div class="status-panel">
+                <div class="panel-header" style="font-size: 1rem;">System Status</div>
+                
+                <div class="status-item">
+                    <span class="status-indicator" id="enrollment-status-indicator"></span>
+                    <span id="enrollment-status-text">Face enrollment status</span>
+                </div>
+                
+                <div class="status-item">
+                    <span class="status-indicator" id="owner-status-indicator"></span>
+                    <span id="owner-status-text">Owner status</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('capture-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const facePreview = document.getElementById('face-preview');
+        const previewImage = document.getElementById('preview-image');
+        const successNotification = document.getElementById('success-notification');
+        const errorNotification = document.getElementById('error-notification');
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+        const cameraError = document.getElementById('camera-error');
+        
+        const enrollmentStatusIndicator = document.getElementById('enrollment-status-indicator');
+        const enrollmentStatusText = document.getElementById('enrollment-status-text');
+        const ownerStatusIndicator = document.getElementById('owner-status-indicator');
+        const ownerStatusText = document.getElementById('owner-status-text');
+        
+        let stream = null;
+        let faceCaptured = false;
+        
+        // Initialize camera
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    facingMode: "user"
+                }, 
+                audio: false 
+            })
+            .then(function(mediaStream) {
+                stream = mediaStream;
+                video.srcObject = mediaStream;
+                video.onloadedmetadata = function(e) {
+                    video.play();
+                    cameraError.style.display = 'none';
+                };
+            })
+            .catch(function(err) {
+                console.error("Error accessing webcam:", err);
+                cameraError.style.display = 'flex';
+                
+                // Update status
+                updateEnrollmentStatus('error', 'Camera access error');
+            });
+        }
+        
+        // Capture face
+        captureBtn.addEventListener('click', function() {
+            if (!stream) {
+                showError("Camera not available. Please refresh the page and allow camera access.");
+                return;
+            }
+            
+            // Draw current video frame to canvas
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Get image data
+            const imageData = canvas.toDataURL('image/jpeg');
+            
+            // Show preview
+            previewImage.src = imageData;
+            facePreview.style.display = 'block';
+            
+            // Upload to server
+            enrollFace(imageData);
+        });
+        
+        // Reset face
+        resetBtn.addEventListener('click', function() {
+            // Hide preview
+            facePreview.style.display = 'none';
+            
+            // Hide notifications
+            successNotification.style.display = 'none';
+            errorNotification.style.display = 'none';
+            
+            // Reset flag
+            faceCaptured = false;
+            
+            // Remove face data from server
+            removeFace();
+        });
+        
+        // Enroll face
+        function enrollFace(imageData) {
+            const formData = new FormData();
+            formData.append('face_image', imageData);
+            
+            fetch('/enroll_face', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showSuccess(data.message);
+                    faceCaptured = true;
+                    
+                    // Update status
+                    updateEnrollmentStatus('active', 'Face enrolled successfully');
+                    
+                    // Refresh status
+                    checkOwnerStatus();
+                } else {
+                    showError(data.message);
+                    facePreview.style.display = 'none';
+                    
+                    // Update status
+                    updateEnrollmentStatus('inactive', 'Face enrollment failed');
+                }
+            })
+            .catch(error => {
+                showError("Error enrolling face: " + error.message);
+                facePreview.style.display = 'none';
+                
+                // Update status
+                updateEnrollmentStatus('error', 'Server communication error');
+            });
+        }
+        
+        // Remove face
+        function removeFace() {
+            fetch('/remove_face', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showSuccess(data.message);
+                    
+                    // Update status
+                    updateEnrollmentStatus('inactive', 'No face enrolled');
+                    
+                    // Refresh status
+                    checkOwnerStatus();
+                } else {
+                    showError(data.message);
+                }
+            })
+            .catch(error => {
+                showError("Error removing face: " + error.message);
+            });
+        }
+        
+        // Show success notification
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successNotification.style.display = 'block';
+            errorNotification.style.display = 'none';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                successNotification.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Show error notification
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorNotification.style.display = 'block';
+            successNotification.style.display = 'none';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                errorNotification.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Check owner status
+        function checkOwnerStatus() {
+            fetch('/check_owner_status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Update owner status
+                        if (data.is_owner) {
+                            ownerStatusIndicator.className = 'status-indicator status-active';
+                            ownerStatusText.textContent = 'You are registered as an owner';
+                        } else {
+                            ownerStatusIndicator.className = 'status-indicator status-inactive';
+                            ownerStatusText.textContent = 'You are not registered as an owner';
+                        }
+                        
+                        // Update enrollment status
+                        if (data.has_face_data) {
+                            updateEnrollmentStatus('active', 'Face enrolled');
+                            faceCaptured = true;
+                            
+                            // Try to load the most recent face image (if available)
+                            // Note: This would require a separate endpoint to retrieve the face image
+                            // For now, we'll just show a generic success
+                            facePreview.style.display = 'block';
+                            previewImage.src = '/static/images/face_enrolled.png';
+                        } else {
+                            updateEnrollmentStatus('inactive', 'No face enrolled');
+                            faceCaptured = false;
+                        }
+                    } else {
+                        // Handle error
+                        ownerStatusIndicator.className = 'status-indicator status-inactive';
+                        ownerStatusText.textContent = 'Unable to check owner status';
+                        updateEnrollmentStatus('error', 'Status check failed');
+                    }
+                })
+                .catch(error => {
+                    console.error("Error checking owner status:", error);
+                    ownerStatusIndicator.className = 'status-indicator status-inactive';
+                    ownerStatusText.textContent = 'Error checking status';
+                    updateEnrollmentStatus('error', 'Status check failed');
+                });
+        }
+        
+        // Helper to update enrollment status
+        function updateEnrollmentStatus(status, message) {
+            switch(status) {
+                case 'active':
+                    enrollmentStatusIndicator.className = 'status-indicator status-active';
+                    break;
+                case 'inactive':
+                    enrollmentStatusIndicator.className = 'status-indicator status-inactive';
+                    break;
+                case 'pending':
+                    enrollmentStatusIndicator.className = 'status-indicator status-pending';
+                    break;
+                case 'error':
+                default:
+                    enrollmentStatusIndicator.className = 'status-indicator status-inactive';
+                    break;
+            }
+            enrollmentStatusText.textContent = message;
+        }
+        
+        // Initialize without starting camera
+        checkOwnerStatus();
+        
+        // Add start camera button
+        const cameraPanel = document.querySelector('.camera-panel');
+        const videoElement = document.getElementById('webcam');
+        
+        // Create a start camera button
+        const startCameraBtn = document.createElement('button');
+        startCameraBtn.id = 'start-camera-btn';
+        startCameraBtn.className = 'btn btn-primary';
+        startCameraBtn.innerHTML = '<i class="fas fa-video"></i> Start Camera';
+        startCameraBtn.style.position = 'absolute';
+        startCameraBtn.style.top = '50%';
+        startCameraBtn.style.left = '50%';
+        startCameraBtn.style.transform = 'translate(-50%, -50%)';
+        startCameraBtn.style.zIndex = '10';
+        
+        // Insert button before video
+        videoElement.parentNode.insertBefore(startCameraBtn, videoElement);
+        
+        // Add click event
+        startCameraBtn.addEventListener('click', function() {
+            startCamera();
+            this.remove(); // Remove the button after clicking
+        });
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        });
+    });
+</script>
+{% endblock %} 

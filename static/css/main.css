@@ -2515,4 +2515,131 @@ html {
 
 .product-info .btn-secondary {
     align-self: flex-start;
+}
+
+/* Email Settings Form */
+.email-settings-form {
+    padding: 20px;
+}
+
+.neon-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.neon-form .form-group {
+    margin-bottom: 15px;
+}
+
+.neon-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--light-color);
+}
+
+.neon-form label i {
+    color: var(--primary-color);
+    margin-right: 8px;
+}
+
+.neon-form .form-control {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 195, 255, 0.3);
+    border-radius: 5px;
+    color: var(--light-color);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.neon-form .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 195, 255, 0.2);
+    outline: none;
+}
+
+.neon-form .form-control:hover {
+    border-color: rgba(0, 195, 255, 0.5);
+}
+
+.neon-form .form-text {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+.neon-form .form-text a {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.neon-alert {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.neon-alert.success {
+    background-color: rgba(0, 255, 128, 0.1);
+    border-color: rgba(0, 255, 128, 0.3);
+    color: rgba(0, 255, 128, 0.9);
+    box-shadow: 0 0 10px rgba(0, 255, 128, 0.3);
+}
+
+.neon-alert.error {
+    background-color: rgba(255, 68, 101, 0.1);
+    border-color: rgba(255, 68, 101, 0.3);
+    color: rgba(255, 68, 101, 0.9);
+    box-shadow: 0 0 10px rgba(255, 68, 101, 0.3);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dashboard-action-card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 195, 255, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-action-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 98, 255, 0.3);
+    transform: translateY(-5px);
+}
+
+.action-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.action-content h4 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    color: var(--light-color);
+}
+
+.action-content p {
+    color: var(--text-color);
+    margin-bottom: 0;
 } 
