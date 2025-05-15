@@ -12,6 +12,7 @@ from flask_socketio import SocketIO
 import threading
 import json
 import base64
+import mediapipe as mp
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import bcrypt
 
